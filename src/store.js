@@ -4,6 +4,7 @@ export default createStore({
     state: {
         loggedIn: false,
         userData: null,
+        notifications: [{message: "asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf"}, {message: "tetetete"}]
     },
     mutations: {
         login(state, payload) {
@@ -14,6 +15,26 @@ export default createStore({
         logout(state) {
             state.loggedIn = false;
             state.userData = null;
+        },
+
+        changeNickname(state, payload) {
+            state.userData.nick = payload;
+        },
+
+        changeEmail(state, payload) {
+            state.userData.email = payload;
+        },
+
+        addNotification(state, payload) {
+            state.notifications.push(payload);
+        },
+
+        removeNotifications(state) {
+            state.notifications = [];
+        },
+
+        removeNotification(state, payload) {
+            state.notifications.splice(payload, 1);
         }
     }
 })
