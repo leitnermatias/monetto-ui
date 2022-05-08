@@ -69,6 +69,6 @@ function save(fieldData, other) {
           <ProfileItemVue @save="save" :data="profileData.email" label="Email" :hasErrors="errors.email.length > 0" :errors="errors.email" editable />
           <ProfileItemVue :data="profileData.role" label="Role" />
       </div>
-      <LoadingSymbol v-else />
+      <LoadingSymbol  class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" v-else />
   </div>
 </template>
