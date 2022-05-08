@@ -12,7 +12,7 @@ const activeTab = "m-2 w-24 h-10 flex justify-center pl-2 text-center items-cent
 </script>
 
 <template>
-<div :class="$route.name === name ? 'border-slate-200 shadow-inner mb-2 rounded font-bold' : 'border-slate-100 shadow mb-2 rounded'  ">
+<div :class="$route.name === name ? 'border-slate-200 mb-2 rounded font-bold' : 'border-slate-100 shadow mb-2 rounded'  ">
     <router-link :class="[$route.name === name ? activeTab : navItem]" :to="path">{{text}}</router-link>
 </div>
 </template>
