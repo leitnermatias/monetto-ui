@@ -23,11 +23,10 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   if (
     !store.state.loggedIn &&
-    to.name !== "Home" &&
     to.name !== "Login" &&
     to.name !== "Sign Up"
   ) {
-    return { name: "Home" };
+    return { name: "Login" };
   }
 });
 
