@@ -58,7 +58,7 @@ function addAccount() {
         <LoadingSymbol v-if="loading" class="w-10 h-10 mt-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"/>
         <table v-else class="table-auto m-auto mt-4 border-4 border-opacity-20 border-slate-500 w-full shadow">
             <thead>
-                <tr class="bg-slate-100 border-b-2 border-slate-500">
+                <tr class="bg-slate-200 border-b-2 border-slate-500">
                     <th class="border-r-4 border-slate-500 border-opacity-50">Account ID</th>
                     <th class="border-r-4 border-slate-500 border-opacity-50">Total Earnings</th>
                     <th class="border-r-4 border-slate-500 border-opacity-50">Total Expenses</th>
