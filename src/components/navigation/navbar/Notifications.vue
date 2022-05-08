@@ -12,8 +12,8 @@ const store = useStore();
         <button v-tippy class="border-2 border-slate-500 p-1 shadow-lg rounded-full" :class="store.state.notifications.length > 0 ? 'animate-pulse border-slate-900' : ''"><BellIcon class="h-6 w-6"/>
             <tippy target="_parent" :enabled="store.state.notifications.length > 0" :extra="{theme: 'light-border'}" placement="right-end" :interactive="true" delay="100" trigger="click">
                 <div class="overflow-y-scroll max-h-80 p-2 w-80">
+                    <button @click="store.commit('removeNotifications')" class="absolute bottom-0.5 left-0 bg-white border border-slate-900 rounded z-40 p-2 shadow-lg hover:shadow-inner hover:border-orange-600">Clear all</button>
                     <Notification :notification="notification" :index="index" v-for="notification, index in store.state.notifications" :key="index" />
-
                 </div>
             </tippy>
         </button>
