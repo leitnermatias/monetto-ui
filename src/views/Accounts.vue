@@ -1,9 +1,11 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import {PlusIcon, CashIcon, TrashIcon} from "@heroicons/vue/outline"
+import {CashIcon} from "@heroicons/vue/outline"
 import {useStore} from "vuex";
 import LoadingSymbol from "@/components/LoadingSymbol.vue";
+import AddAccountButton from '@/components/accounts/AddAccountButton.vue';
+import ActionsButton from '@/components/accounts/ActionsButton.vue';
 
 const store = useStore();
 const accounts = ref([])
@@ -54,7 +56,7 @@ function addAccount() {
 <template>
     <div class="flex flex-col justify-center items-center">
         <h1 class="flex items-center justify-center gap-2 text-center text-2xl text-slate-900 border-b-4 rounded border-slate-300 p-2 w-full"><CashIcon class="w-6 h-6 text-slate-700"/>Accounts</h1>
-        <button @click="addAccount" v-if="!loading" class="flex items-center text-slate font-bold mt-2 fixed bottom-5 right-5 border-2 bg-white border-blue-200 p-2 gap-2 rounded shadow-xl hover:border-orange-300 hover:shadow-inner"><PlusIcon class="w-5 h-5"/>Add account</button>
+        <AddAccountButton @click="addAccount" v-if="!loading" />
         <LoadingSymbol v-if="loading" class="w-10 h-10 mt-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"/>
         <table v-else class="table-auto m-auto mt-4 border-4 border-opacity-20 border-slate-500 w-full shadow">
             <thead>
@@ -70,14 +72,8 @@ function addAccount() {
                     <td class="border-r-4 border-slate-500 border-opacity-50">{{account.accountId}}</td>
                     <td class="border-r-4 border-slate-500 border-opacity-50">{{sum(account.earnings)}}</td>
                     <td class="border-r-4 border-slate-500 border-opacity-50">{{sum(account.expenses)}}</td>
-                    <td>
-                        <button v-tippy class="border w-10/12 border-blue-400 bg-white rounded hover:border-orange-300">Select
-                            <tippy target="_parent" :interactive="true" placement="left-end" :extra="{arrow: true, offset: [0, 5], theme: 'light-border'}">
-                                <div class="flex flex-col w-28 shadow rounded">
-                                    <button @click="deleteAccount(account.accountId)" class="flex items-center gap-2 justify-center p-2 border border-blue-200 hover:shadow-inner hover:border-orange-200"><TrashIcon class="w-5 h-5"/>Delete</button>
-                                </div>
-                            </tippy>
-                        </button>
+                    <td class="p-1">
+                        <ActionsButton @delete="deleteAccount(account.accountId)"/>
                     </td>
                 </tr>
             </tbody>
