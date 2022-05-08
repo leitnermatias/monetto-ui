@@ -10,7 +10,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div @click="store.commit('removeNotification', index)" class="relative flex flex-col justify-center w-64 h-24 rounded-xl mb-2 p-2 shadow-lg hover:shadow-inner hover:border">
-        <p class="text-slate-900 text-lg break-words cursor-pointer">{{notification.message}}</p>
+    <div @click="store.commit('removeNotification', index)" class="relative flex flex-col justify-center w-full h-24 rounded-xl mb-2 p-2 shadow-lg border cursor-pointer border-blue-400 hover:shadow-inner hover:border-orange-400">
+        <p class="text-slate-800 text-sm break-words text-center font-bold">{{notification.message}}</p>
     </div>
 </template>

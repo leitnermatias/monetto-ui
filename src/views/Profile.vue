@@ -36,6 +36,7 @@ function save(fieldData, other) {
       errors.value.email = []
       promise = axios.post("/user/update/email", {"nick": profileData.value.nick, "newEmail": fieldData.newData})
       .then(response => {
+        store.commit('addNotification', {message: `Changed email from ${profileData.value.email} to ${fieldData.newData}`});
         store.commit('changeEmail', fieldData.newData);
         getProfileData();
       })
@@ -47,6 +48,7 @@ function save(fieldData, other) {
       errors.value.nick = []
       promise = axios.post("/user/update/username", {"nick": profileData.value.nick, "newNick": fieldData.newData})
       .then((response) => {
+        store.commit('addNotification', {message: `Changed nickname from ${profileData.value.nick} to ${fieldData.newData}`});
         store.commit('changeNickname', fieldData.newData);
         getProfileData()
       })
