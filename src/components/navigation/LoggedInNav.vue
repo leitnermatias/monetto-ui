@@ -11,5 +11,7 @@ import LogoutButton from "./navbar/LogoutButton.vue";
         <LogoutButton/>
         <LoggedInNavItemVue path="/" text="Home" name="Home" />
         <LoggedInNavItemVue path="/profile" text="Profile" name="Profile"/>
+        <LoggedInNavItemVue path="/accounts" text="Accounts" name="Accounts"/>
+
     </nav>
 </template>
