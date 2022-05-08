@@ -13,7 +13,7 @@ const store = useStore();
 
 <template>
   <div :class="store.state.loggedIn ? 'flex flex-row h-screen' : '' ">
-    <header :class="store.state.loggedIn ? 'border-r-2 border-slate-200 shadow-lg w-1/12 bg-slate-100 bg-opacity-50' : 'bg-white shadow h-14'">
+    <header :class="store.state.loggedIn ? 'border-r-2 border-slate-200 shadow-lg w-2/12 bg-slate-100 bg-opacity-50' : 'bg-white shadow h-14'">
       <LoggedInNavVue v-if="store.state.loggedIn" />
       <LoggedOutNavVue v-else />
     </header>
