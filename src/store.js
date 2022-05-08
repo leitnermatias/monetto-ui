@@ -4,7 +4,7 @@ export default createStore({
     state: {
         loggedIn: false,
         userData: null,
-        notifications: [{message: "asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf"}, {message: "tetetete"}]
+        notifications: []
     },
     mutations: {
         login(state, payload) {
