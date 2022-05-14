@@ -1,11 +1,12 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import {CashIcon} from "@heroicons/vue/outline"
+import {CashIcon, TrashIcon} from "@heroicons/vue/outline"
 import {useStore} from "vuex";
 import LoadingSymbol from "@/components/LoadingSymbol.vue";
 import AddAccountButton from '@/components/accounts/AddAccountButton.vue';
 import ActionsButton from '@/components/accounts/ActionsButton.vue';
+import DataTableVue from '@/components/DataTable.vue';
 
 const store = useStore();
 const accounts = ref([])
@@ -19,7 +20,14 @@ function getAccounts() {
     loading.value = true;
     axios.get(`/accounts/${store.state.userData.nick}`)
     .then(response => {
-        accounts.value = response.data;
+        accounts.value = response.data.map(account => {
+            return {
+                accountId: account.account_id,
+                earnings: sum(account.earnings),
+                expenses: sum(account.expenses)
+            }
+        })
+
         loading.value = false;
     })
 }
@@ -58,25 +66,21 @@ function addAccount() {
         <h1 class="flex items-center justify-center gap-2 text-center text-2xl text-slate-900 border-b-4 rounded border-slate-300 p-2 w-full"><CashIcon class="w-6 h-6 text-slate-700"/>Accounts</h1>
         <AddAccountButton @click="addAccount" v-if="!loading" />
         <LoadingSymbol v-if="loading" class="w-10 h-10 mt-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"/>
-        <table v-else class="table-auto m-auto mt-4 border-4 border-opacity-20 border-slate-500 w-full shadow">
-            <thead>
-                <tr class="bg-slate-200 border-b-2 border-slate-500">
-                    <th class="border-r-4 border-slate-500 border-opacity-50">Account ID</th>
-                    <th class="border-r-4 border-slate-500 border-opacity-50">Total Earnings</th>
-                    <th class="border-r-4 border-slate-500 border-opacity-50">Total Expenses</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr :class="index % 2 === 0 ? 'bg-slate-100' : 'bg-white'" class="border-b-2 border-slate-300 text-center" v-for="account, index in accounts" :key="account.accountId">
-                    <td class="border-r-4 border-slate-500 border-opacity-50">{{account.accountId}}</td>
-                    <td class="border-r-4 border-slate-500 border-opacity-50">{{sum(account.earnings)}}</td>
-                    <td class="border-r-4 border-slate-500 border-opacity-50">{{sum(account.expenses)}}</td>
-                    <td class="p-1">
-                        <ActionsButton @delete="deleteAccount(account.accountId)"/>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        
+        <DataTableVue 
+        :headersKeys="{'Account ID':'accountId', 'Total Earnings':'earnings', 'Total Expenses':'expenses'}" 
+        :data="accounts" 
+        hasActions
+        >
+
+            <template #actions="actionsProps">
+                <button 
+                @click="deleteAccount(actionsProps.rowData.accountId)" 
+                class="flex items-center gap-2 justify-center p-2 border border-blue-200 hover:shadow-inner hover:border-orange-200">
+                    <TrashIcon class="w-5 h-5"/>Delete
+                </button>
+            </template>
+
+        </DataTableVue>
     </div>
 </template>
