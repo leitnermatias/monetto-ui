@@ -1,10 +1,7 @@
 <script setup>
 import LoggedOutNavVue from './components/navigation/LoggedOutNav.vue';
 import LoggedInNavVue from './components/navigation/LoggedInNav.vue';
-import { BellIcon, XCircleIcon } from '@heroicons/vue/outline';
 import { useStore } from 'vuex';
-import { ref } from 'vue';
-
 
 const store = useStore();
 
