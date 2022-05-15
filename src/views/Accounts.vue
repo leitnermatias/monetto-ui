@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue';
 import {CashIcon, TrashIcon} from "@heroicons/vue/outline"
 import {useStore} from "vuex";
 import LoadingSymbol from "@/components/LoadingSymbol.vue";
-import AddAccountButton from '@/components/accounts/AddAccountButton.vue';
+import AddAccountButton from '@/components/buttons/StickyAddButton.vue';
 import ActionsButton from '@/components/accounts/ActionsButton.vue';
 import DataTable from '@/components/DataTable.vue';
 import DeleteButton from '@/components/buttons/DeleteButton.vue';
