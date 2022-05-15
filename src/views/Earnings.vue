@@ -28,6 +28,7 @@ function getEarningsForUser() {
 function deleteEarning(earningId) {
     axios.delete(`/earning/${earningId}`)
     .then(response => {
+        store.commit('addNotification', {message: `Deleted earning with ID ${earningId}`})
         getEarningsForUser();
     })
 }
