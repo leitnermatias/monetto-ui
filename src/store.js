@@ -2,19 +2,23 @@ import { createStore } from "vuex";
 
 export default createStore({
     state: {
-        loggedIn: false,
-        userData: null,
+        loggedIn: window.localStorage.getItem('logged-in'),
+        userData: JSON.parse(window.localStorage.getItem('user-data')),
         notifications: []
     },
     mutations: {
         login(state, payload) {
             state.loggedIn = true;
             state.userData = payload;
+            window.localStorage.setItem('user-data', JSON.stringify(payload));
+            window.localStorage.setItem('logged-in', true);
         },
 
         logout(state) {
             state.loggedIn = false;
             state.userData = null;
+            window.localStorage.setItem('user-data', null);
+            window.localStorage.setItem('logged-in', false);
         },
 
         changeNickname(state, payload) {
