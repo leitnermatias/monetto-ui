@@ -6,7 +6,9 @@ import {useStore} from "vuex";
 import LoadingSymbol from "@/components/LoadingSymbol.vue";
 import AddAccountButton from '@/components/accounts/AddAccountButton.vue';
 import ActionsButton from '@/components/accounts/ActionsButton.vue';
-import DataTableVue from '@/components/DataTable.vue';
+import DataTable from '@/components/DataTable.vue';
+import DeleteButton from '@/components/buttons/DeleteButton.vue';
+
 
 const store = useStore();
 const accounts = ref([])
@@ -67,7 +69,7 @@ function addAccount() {
         <AddAccountButton @click="addAccount" v-if="!loading" />
         <LoadingSymbol v-if="loading" class="w-10 h-10 mt-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"/>
         
-        <DataTableVue 
+        <DataTable 
         v-else
         :headersKeys="{'Account ID':'accountId', 'Total Earnings':'earnings', 'Total Expenses':'expenses'}" 
         :data="accounts" 
@@ -75,13 +77,9 @@ function addAccount() {
         >
 
             <template #actions="actionsProps">
-                <button 
-                @click="deleteAccount(actionsProps.rowData.accountId)" 
-                class="flex items-center gap-2 justify-center p-2 border border-blue-200 hover:shadow-inner hover:border-orange-200">
-                    <TrashIcon class="w-5 h-5"/>Delete
-                </button>
+                <DeleteButton @delete="deleteAccount(actionsProps.rowData.accountId)" />
             </template>
 
-        </DataTableVue>
+        </DataTable>
     </div>
 </template>

@@ -1,10 +1,10 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import {TrashIcon} from "@heroicons/vue/outline"
 import { useStore } from 'vuex';
 import LoadingSymbol from '@/components/LoadingSymbol.vue';
 import DataTableVue from '@/components/DataTable.vue';
+import DeleteButton from '@/components/buttons/DeleteButton.vue';
 
 const store = useStore()
 
@@ -25,6 +25,13 @@ function getEarningsForUser() {
     })
 }
 
+function deleteEarning(earningId) {
+    axios.delete(`/earning/${earningId}`)
+    .then(response => {
+        getEarningsForUser();
+    })
+}
+
 </script>
 
 <template>
@@ -39,11 +46,7 @@ function getEarningsForUser() {
         >
 
             <template #actions="actionsProps">
-                <button 
-                @click="deleteAccount(actionsProps.rowData.accountId)" 
-                class="flex items-center gap-2 justify-center p-2 border border-blue-200 hover:shadow-inner hover:border-orange-200">
-                    <TrashIcon class="w-5 h-5"/>Delete
-                </button>
+                <DeleteButton @delete="deleteEarning(actionsProps.rowData.earning_id)" />
             </template>
         </DataTableVue>
 
