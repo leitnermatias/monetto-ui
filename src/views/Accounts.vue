@@ -68,6 +68,7 @@ function addAccount() {
         <LoadingSymbol v-if="loading" class="w-10 h-10 mt-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"/>
         
         <DataTableVue 
+        v-else
         :headersKeys="{'Account ID':'accountId', 'Total Earnings':'earnings', 'Total Expenses':'expenses'}" 
         :data="accounts" 
         hasActions

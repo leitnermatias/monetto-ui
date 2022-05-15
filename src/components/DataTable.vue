@@ -1,7 +1,6 @@
 <script setup>
 import {TrashIcon} from "@heroicons/vue/outline"
 
-
 const props = defineProps({
     headersKeys: Object,
     data: Array,
@@ -42,7 +41,7 @@ const props = defineProps({
                 </td>
                 <td v-if="hasActions" class="border-l-2 border-slate-500 border-opacity-50">
                     <button v-tippy class="border w-10/12 border-blue-400 bg-white rounded hover:border-orange-300">Select
-                        <tippy target="_parent" :interactive="true" placement="left-end" :extra="{arrow: true, offset: [0, 5], theme: 'light-border'}">
+                        <tippy :enabled="!!$slots.actions" target="_parent" :interactive="true" placement="left-end" :extra="{arrow: true, offset: [0, 5], theme: 'light-border'}">
                             <div class="flex flex-col w-28 shadow rounded">
                                 <slot name="actions" :rowData="row"></slot>
                             </div>
