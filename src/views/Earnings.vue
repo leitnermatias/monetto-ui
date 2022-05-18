@@ -32,6 +32,10 @@ function getEarningsForUser() {
     axios.get(`/earnings/user/${store.state.userData.nick}`)
     .then(response => {
         earningsForUser.value = response.data;
+        earningsForUser.value.forEach(earning => {
+            earning.value = parseFloat(earning.value);
+            earning.value = earning.value.toFixed(2);
+        });
         loading.value = false
     })
 }
