@@ -70,8 +70,8 @@ function isActiveChild() {
     <div @click="triggerShowChilds" :class="['flex items-center', $route.name === name ? 'gap-2 font-bold text-slate-900' : 'gap-1 text-slate-800']" >
         <ChevronDownIcon v-if="showChilds && children.length > 0" class="w-5 h-5"/>
         <ChevronRightIcon v-else-if="!showChilds && children.length > 0" class="w-5 h-5"/>
-        <router-link :to="path">
-        {{text}}
+        <router-link class="flex gap-2" :to="path">
+        <slot name="icon"></slot>{{text}}
         </router-link>
     </div>
     <div v-if="showChilds && isActiveChildOrSelf()" class="flex flex-col">
