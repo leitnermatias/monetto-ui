@@ -124,12 +124,14 @@ function getAccounts() {
       Charts
     </h1>
   </div>
-  <div v-if="showCharts" class="flex gap-2 p-2 border-2 rounded border-orange-200 shadow-xl">
-    <div class="w-1/2 border border-slate-900 shadow-xl">
-      <VerticalBarChart :chartData="expenseEarningChartData" />
+  <div v-if="showCharts" class="flex gap-6 p-2 justify-center border-2 rounded border-orange-200 shadow-xl w-fit self-center">
+    <div class="border border-slate-500 shadow-inner rounded">
+      <h1 class="text-center text-sm p-2 font-bold text-slate-900">Earnings and Expenses by month</h1>
+      <VerticalBarChart class="p-2" :chartData="expenseEarningChartData" width="400px" height="400px" />
     </div>
-    <div class="w-1/2 border border-slate-900 shadow-xl">
-      <PieChart :chartData="accountsChartData" />
+    <div class="border border-slate-500 shadow-inner rounded">
+      <h1 class="text-center text-sm p-2 font-bold text-slate-900">Profits by account</h1>
+      <PieChart class="p-2" :chartData="accountsChartData" width="400px" height="400px"/>
     </div>
   </div>
 </div>
