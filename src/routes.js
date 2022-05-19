@@ -1,11 +1,11 @@
-import Home from './views/Home.vue'
-import Login from "./views/Login.vue"
-import SignUp from "./views/SignUp.vue"
-import Profile from "./views/Profile.vue"
-import Accounts from "./views/Accounts.vue"
-import Earnings from "./views/Earnings.vue"
-import Expenses from "./views/Expenses.vue"
-import NotFound from './views/NotFound.vue'
+const Home = () => import('./views/Home.vue')
+const Login = () => import('./views/Login.vue')
+const SignUp = () => import('./views/SignUp.vue')
+const Profile = () => import('./views/Profile.vue')
+const Accounts = () => import('./views/Accounts.vue')
+const Earnings = () => import('./views/Earnings.vue')
+const Expenses = () => import('./views/Expenses.vue')
+const NotFound = () => import('./views/NotFound.vue')
 
 /** @type {import('vue-router').RouterOptions['routes']} */
 export const routes = [
