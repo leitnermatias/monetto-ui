@@ -4,13 +4,15 @@ import {TrashIcon} from "@heroicons/vue/outline"
 const props = defineProps({
     headersKeys: Object,
     data: Array,
-    hasActions: Boolean
+    hasActions: Boolean,
+    noDataMessage: String
 })
 
 </script>
 
 <template>
-    <table class="table-auto m-auto mt-4 border-4 border-slate-500 border-opacity-50 w-full shadow-lg">
+    <h1 v-if="data.length === 0" class="text-xl text-slate-900 font-semibold m-auto text-center">{{noDataMessage}}</h1>
+    <table v-else class="table-auto m-auto mt-4 border-4 border-slate-500 border-opacity-50 w-full shadow-lg">
         <thead>
             <tr class="bg-slate-200 bg-opacity-25 border-b-2 border-slate-400">
                 <th 
