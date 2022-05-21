@@ -51,7 +51,7 @@ function deleteEarning(earningId) {
 function addEarning() {
     axios.post("/earning", earningToAdd.value)
     .then(response => {
-        store.commit('addNotification', {message: `Added earning: ${response.data}`})
+        store.commit('addNotification', {message: `Added earning: ${response.data.earning_id}`})
         getEarningsForUser();
         addEarningPopup(false);
     })
@@ -115,6 +115,7 @@ function getAccountsForUser() {
         v-else
         :headersKeys="{'Earning ID': 'earning_id', 'Account ID': 'accountId', 'Description':'description', 'Date':'date', 'Value':'value'}"
         :data="earningsForUser"
+        noDataMessage="There are no earnings, start by adding one!"
         hasActions
         >
 

@@ -23,11 +23,11 @@ const expenseToAdd = ref({
 
 
 onMounted(() => {
-    getEarningsForUser();
+    getExpensesForUser();
     getAccountsForUser();
 })
 
-function getEarningsForUser() {
+function getExpensesForUser() {
     loading.value = true;
     axios.get(`/expenses/user/${store.state.userData.nick}`)
     .then(response => {
@@ -40,24 +40,24 @@ function getEarningsForUser() {
     })
 }
 
-function deleteEarning(expenseId) {
+function deleteExpense(expenseId) {
     axios.delete(`/expense/${expenseId}`)
     .then(response => {
         store.commit('addNotification', {message: `Deleted expense with ID ${expenseId}`})
-        getEarningsForUser();
+        getExpensesForUser();
     })
 }
 
-function addEarning() {
+function addExpense() {
     axios.post("/expense", expenseToAdd.value)
     .then(response => {
-        store.commit('addNotification', {message: `Added expense: ${response.data}`})
-        getEarningsForUser();
-        addEarningPopup(false);
+        store.commit('addNotification', {message: `Added expense: ${response.data.expense_id}`})
+        getExpensesForUser();
+        addExpensePopup(false);
     })
 }
 
-function addEarningPopup(visible) {
+function addExpensePopup(visible) {
     if (!visible) {
         expenseToAdd.value = {
             accountId: "",
@@ -81,9 +81,9 @@ function getAccountsForUser() {
 
 <template>
     <div class="w-full h-52">
-        <h1 class="flex items-center justify-center gap-2 text-center text-2xl text-slate-900 border-b-4 rounded border-slate-300 p-2 w-full">Earnings</h1>
-        <StickyAddButton v-if="!loading" @click="addEarningPopup(true)"/>
-        <Popup v-if="showAddPopup" @cancel="addEarningPopup(false)" @accept="addEarning">
+        <h1 class="flex items-center justify-center gap-2 text-center text-2xl text-slate-900 border-b-4 rounded border-slate-300 p-2 w-full">Expenses</h1>
+        <StickyAddButton v-if="!loading" @click="addExpensePopup(true)"/>
+        <Popup v-if="showAddPopup" @cancel="addExpensePopup(false)" @accept="addExpense">
             <template #title>
                 <div class="flex justify-center items-center mt-1 text-2xl border-b-2 pt-2 border-blue-300 text-slate-900 font-semibold">
                     <h1>Add expense</h1>
@@ -113,13 +113,14 @@ function getAccountsForUser() {
         <LoadingSymbol v-if="loading" class="w-10 h-10 mt-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600 m-auto"/>
         <DataTableVue
         v-else
-        :headersKeys="{'Earning ID': 'expense_id', 'Account ID': 'accountId', 'Description':'description', 'Date':'date', 'Value':'value'}"
+        :headersKeys="{'Expense ID': 'expense_id', 'Account ID': 'accountId', 'Description':'description', 'Date':'date', 'Value':'value'}"
         :data="expensesForUser"
+        :noDataMessage="'There are no expenses, start by adding one!'"
         hasActions
         >
 
             <template #actions="actionsProps">
-                <DeleteButton @delete="deleteEarning(actionsProps.rowData.expense_id)" />
+                <DeleteButton @delete="deleteExpense(actionsProps.rowData.expense_id)" />
             </template>
         </DataTableVue>
 
