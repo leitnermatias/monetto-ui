@@ -44,7 +44,7 @@ const props = defineProps({
                 <td v-if="hasActions" class="border-l-2 border-slate-500 border-opacity-50">
                     <button v-tippy class="border w-10/12 border-blue-400 bg-white rounded hover:border-orange-300">Select
                         <tippy :enabled="!!$slots.actions" target="_parent" :interactive="true" placement="left-end" :extra="{arrow: true, offset: [0, 5], theme: 'light-border'}">
-                            <div class="flex flex-col w-28 shadow rounded">
+                            <div class="flex flex-col w-36 rounded">
                                 <slot name="actions" :rowData="row"></slot>
                             </div>
                         </tippy>
