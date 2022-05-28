@@ -39,7 +39,7 @@ onMounted(() => {
 const store = useStore();
 
 function getEarningsForUser() {
-  axios.get(`/earnings/user/${store.state.userData.nick}`)
+  axios.get(`/earning/user/${store.state.userData.nick}`)
   .then(response => {
     let earningsDataset = {
       label: "Earnings",
@@ -58,7 +58,7 @@ function getEarningsForUser() {
 }
 
 function getExpensesForUser() {
-  axios.get(`/expenses/user/${store.state.userData.nick}`)
+  axios.get(`/expense/user/${store.state.userData.nick}`)
   .then(response => {
     let expensesDataset = {
       label: "Expenses",
@@ -88,7 +88,7 @@ function sum(values) {
 }
 
 function getAccounts() {
-  axios.get(`/accounts/${store.state.userData.nick}`)
+  axios.get(`/account/user/${store.state.userData.nick}`)
   .then(response => {
     let accountsDataSet = {
       backgroundColor: [],
