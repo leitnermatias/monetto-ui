@@ -4,7 +4,7 @@ import PieChart from '@/components/chart/PieChart.vue';
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useStore } from 'vuex';
-import { ChevronDownIcon, MinusIcon } from '@heroicons/vue/outline';
+import LoadingSymbol from '@/components/LoadingSymbol.vue';
 
 const expenseEarningChartData = ref({
   labels: [
@@ -27,7 +27,8 @@ const accountsChartData = ref({
   labels: [],
   datasets: []
 })
-const showCharts = ref(false);
+const showEarningExpenseChart = ref(false);
+const showAccountsPieChart = ref(false);
 
 
 onMounted(() => {
@@ -39,6 +40,7 @@ onMounted(() => {
 const store = useStore();
 
 function getEarningsForUser() {
+  showEarningExpenseChart.value = false;
   axios.get(`/earning/user/${store.state.userData.nick}`)
   .then(response => {
     let earningsDataset = {
@@ -54,10 +56,12 @@ function getEarningsForUser() {
     });
     
     expenseEarningChartData.value.datasets.push(earningsDataset);
+    showEarningExpenseChart.value = true;
   })
 }
 
 function getExpensesForUser() {
+  showEarningExpenseChart.value = false;
   axios.get(`/expense/user/${store.state.userData.nick}`)
   .then(response => {
     let expensesDataset = {
@@ -73,6 +77,7 @@ function getExpensesForUser() {
     });
     
     expenseEarningChartData.value.datasets.push(expensesDataset);
+    showEarningExpenseChart.value = true;
   })
 }
 
@@ -88,6 +93,7 @@ function sum(values) {
 }
 
 function getAccounts() {
+  showAccountsPieChart.value = false
   axios.get(`/account/user/${store.state.userData.nick}`)
   .then(response => {
     let accountsDataSet = {
@@ -98,13 +104,13 @@ function getAccounts() {
       const randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);
       const randomRGB = () => `rgb(${randomNum()}, ${randomNum()}, ${randomNum()})`;
       accountsDataSet.backgroundColor.push(randomRGB());
-      accountsChartData.value.labels.push(account.account_id);
+      accountsChartData.value.labels.push(account.name);
       let total = sum(account.earnings.map(e => e.value)) - sum(account.expenses.map(e => e.value));
       accountsDataSet.data.push(total < 0 ? 0 : total);
     })
 
     accountsChartData.value.datasets.push(accountsDataSet);
-
+    showAccountsPieChart.value = true;
   })
 }
 
@@ -113,26 +119,17 @@ function getAccounts() {
 <template>
 <div class="flex flex-col gap-1 w-full">
   <h1 class="text-2xl text-center text-slate-900 mb-2 w-full border-b-4 rounded border-slate-400">Home</h1>
-  <div 
-  @click="showCharts = !showCharts" 
-  class="flex justify-center border-b-2 rounded border-blue-300 text-xl hover:bg-orange-100 hover:border-orange-300 hover:bg-opacity-40 cursor-pointer"
-  :class="showCharts ? 'border-orange-500 w-1/2 self-center border font-bold' : 'w-1/2 self-center border font-semibold'"
-  >
-    <h1 class="text-slate-900 flex items-center gap-4">
-      <MinusIcon v-if="showCharts" class="w-5 h-5" />
-      <ChevronDownIcon v-else class="w-5 h-5"/>
-      Charts
-    </h1>
   </div>
-  <div v-if="showCharts" class="flex gap-6 p-2 justify-center border-2 rounded border-orange-200 shadow-xl w-fit self-center">
-    <div class="border border-slate-500 shadow-inner rounded">
+  <div class="flex gap-6 p-2 justify-between m-auto rounded w-fit self-center">
+    <div v-if="showEarningExpenseChart" class="border border-slate-500 shadow-inner rounded">
       <h1 class="text-center text-sm p-2 font-bold text-slate-900">Earnings and Expenses by month</h1>
       <VerticalBarChart class="p-2" :chartData="expenseEarningChartData" width="400px" height="400px" />
     </div>
-    <div class="border border-slate-500 shadow-inner rounded">
+    <LoadingSymbol v-else class="h-5 w-5"/>
+    <div v-if="showAccountsPieChart" class="border border-slate-500 shadow-inner rounded">
       <h1 class="text-center text-sm p-2 font-bold text-slate-900">Profits by account</h1>
       <PieChart class="p-2" :chartData="accountsChartData" width="400px" height="400px"/>
     </div>
+    <LoadingSymbol v-else class="h-5 w-5"/>
   </div>
-</div>
 </template>
