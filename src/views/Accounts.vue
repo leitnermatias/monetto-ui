@@ -1,13 +1,10 @@
 <script setup>
-import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import {CashIcon, TrashIcon, PlusCircleIcon, TrendingDownIcon, TrendingUpIcon} from "@heroicons/vue/outline"
+import {CashIcon, TrashIcon, PencilIcon, TrendingDownIcon, TrendingUpIcon} from "@heroicons/vue/outline"
 import {useStore} from "vuex";
 import LoadingSymbol from "@/components/LoadingSymbol.vue";
 import AddAccountButton from '@/components/buttons/StickyAddButton.vue';
-import ActionsButton from '@/components/accounts/ActionsButton.vue';
 import DataTable from '@/components/DataTable.vue';
-import DeleteButton from '@/components/buttons/DeleteButton.vue';
 import ActionButton from "@/components/buttons/ActionButton.vue";
 import Popup from "@/components/Popup.vue";
 import * as AccountService from "@/service/account";
@@ -23,7 +20,7 @@ const valueToAdd = ref({
     value: "",
     description: "",
 })
-const accountToAdd = ref({
+const accountToAddEdit = ref({
     name: "",
     description: ""
 })
@@ -45,14 +42,18 @@ function sum(earnings) {
 
 }
 
-function popup(type, accountId) {
+function popup(type, account) {
     if (type === 'closePopup') {
         activePopup.value = '';
-        activeAccount.value = null;
+        activeAccount.value = {};
         valueToAdd.value.description = "";
         valueToAdd.value.value = "";
+        accountToAddEdit.value.name = "";
+        accountToAddEdit.value.description = "";
     } else {
-        activeAccount.value = accountId;
+        activeAccount.value = account;
+        accountToAddEdit.value.name = account.name;
+        accountToAddEdit.value.description = account.description;
         activePopup.value = type;
     }
 }
@@ -84,7 +85,7 @@ function deleteAcc(accountId) {
 }
 
 function addAccount() {
-    AccountService.addAccount(store.state.userData.nick, accountToAdd.value.name, accountToAdd.value.description)
+    AccountService.addAccount(store.state.userData.nick, accountToAddEdit.value.name, accountToAddEdit.value.description)
     .then(response => {
         store.commit('addNotification', {message: `Added an account for user ${store.state.userData.nick}`})
         getAccounts()
@@ -92,8 +93,19 @@ function addAccount() {
     })
 }
 
+function editAccount() {
+    const name = accountToAddEdit.value.name
+    const description = accountToAddEdit.value.description
+    AccountService.editAccount(activeAccount.value.accountId, name, description)
+    .then(response => {
+        store.commit("addNotification", {message: `Edited account with ID: ${activeAccount.value.accountId}`});
+        getAccounts();
+        popup('closePopup');
+    })
+}
+
 function addEarningForAccount() {
-    EarningService.addEarning(activeAccount.value, valueToAdd.value.value, valueToAdd.value.description)
+    EarningService.addEarning(activeAccount.value.accountId, valueToAdd.value.value, valueToAdd.value.description)
     .then(response => {
         store.commit('addNotification', {message: `Added earning: ${response.data.earning_id}`})
         getAccounts();
@@ -102,7 +114,7 @@ function addEarningForAccount() {
 }
 
 function addExpenseForAccount() {
-    ExpenseService.addExpense(activeAccount.value, valueToAdd.value.value, valueToAdd.value.description)
+    ExpenseService.addExpense(activeAccount.value.accountId, valueToAdd.value.value, valueToAdd.value.description)
     .then(response => {
         store.commit('addNotification', {message: `Added expense: ${response.data.earning_id}`})
         getAccounts();
@@ -166,16 +178,35 @@ function addExpenseForAccount() {
                 <div class="flex flex-col gap-2 justify-center items-center pt-2 mt-4">
                     <div class="flex flex-col w-full items-center">
                         <label class="self-center font-semibold text-slate-900">Name</label>
-                        <input v-model="accountToAdd.name" maxlength="100" type="text" class="form-input rounded border-slate-400 focus:ring-0 focus:border-orange-300 focus:border-2 w-1/2">
+                        <input v-model="accountToAddEdit.name" maxlength="100" type="text" class="form-input rounded border-slate-400 focus:ring-0 focus:border-orange-300 focus:border-2 w-1/2">
                     </div>
                     <div class="flex flex-col w-full items-center">
                         <label class="self-center font-semibold text-slate-900">Description</label>
-                        <textarea v-model="accountToAdd.description" maxlength="100" class="form-textarea rounded w-1/2 resize-none border-slate-400 focus:border-orange-300 focus:ring-0 focus:border-2"></textarea>
+                        <textarea v-model="accountToAddEdit.description" maxlength="100" class="form-textarea rounded w-1/2 resize-none border-slate-400 focus:border-orange-300 focus:ring-0 focus:border-2"></textarea>
                     </div>
                 </div>
             </template>
         </Popup>
-        
+        <Popup v-if="activePopup === 'editAccount'" @cancel="popup('closePopup')" @accept="editAccount">
+            <template #title>
+                <div class="flex justify-center items-center mt-1 text-2xl border-b-2 pt-2 border-blue-300 text-slate-900 font-semibold">
+                    <h1>Edit account</h1>
+                </div>
+            </template>
+
+            <template #body>
+                <div class="flex flex-col gap-2 justify-center items-center pt-2 mt-4">
+                    <div class="flex flex-col w-full items-center">
+                        <label class="self-center font-semibold text-slate-900">Name</label>
+                        <input v-model="accountToAddEdit.name" maxlength="100" type="text" class="form-input rounded border-slate-400 focus:ring-0 focus:border-orange-300 focus:border-2 w-1/2">
+                    </div>
+                    <div class="flex flex-col w-full items-center">
+                        <label class="self-center font-semibold text-slate-900">Description</label>
+                        <textarea v-model="accountToAddEdit.description" maxlength="100" class="form-textarea rounded w-1/2 resize-none border-slate-400 focus:border-orange-300 focus:ring-0 focus:border-2"></textarea>
+                    </div>
+                </div>
+            </template>
+        </Popup>
         
         <AddAccountButton @click="popup('addAccount', null)" v-if="!loading" />
         <LoadingSymbol v-if="loading" class="w-10 h-10 mt-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"/>
@@ -186,15 +217,17 @@ function addExpenseForAccount() {
         :data="accounts" 
         hasActions
         >
-
             <template #actions="actionsProps">
+                <ActionButton @click="popup('editAccount', actionsProps.rowData)">
+                    <PencilIcon class="h-5 w-5"/>Edit
+                </ActionButton>
                 <ActionButton @click="deleteAcc(actionsProps.rowData.accountId)">
                     <TrashIcon class="h-5 w-5"/>Delete
                 </ActionButton>
-                <ActionButton @click="popup('addEarning', actionsProps.rowData.accountId)">
+                <ActionButton @click="popup('addEarning', actionsProps.rowData)">
                     <TrendingUpIcon class="h-5 w-5"/>Add earning
                 </ActionButton>
-                <ActionButton @click="popup('addExpense', actionsProps.rowData.accountId)">
+                <ActionButton @click="popup('addExpense', actionsProps.rowData)">
                     <TrendingDownIcon class="h-5 w-5"/>Add expense
                 </ActionButton>
             </template>
