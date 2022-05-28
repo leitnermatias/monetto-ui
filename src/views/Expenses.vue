@@ -7,6 +7,8 @@ import DataTableVue from '@/components/DataTable.vue';
 import DeleteButton from '@/components/buttons/DeleteButton.vue';
 import StickyAddButton from '@/components/buttons/StickyAddButton.vue';
 import Popup from "@/components/Popup.vue"
+import * as ExpenseService from "@/service/expense";
+import * as AccountService from "@/service/account";
 
 
 const store = useStore()
@@ -29,7 +31,7 @@ onMounted(() => {
 
 function getExpensesForUser() {
     loading.value = true;
-    axios.get(`/expenses/user/${store.state.userData.nick}`)
+    ExpenseService.getExpensesForUser(store.state.userData.nick)
     .then(response => {
         expensesForUser.value = response.data;
         expensesForUser.value.forEach(expense => {
@@ -41,7 +43,7 @@ function getExpensesForUser() {
 }
 
 function deleteExpense(expenseId) {
-    axios.delete(`/expense/${expenseId}`)
+    ExpenseService.deleteExpense(expenseId)
     .then(response => {
         store.commit('addNotification', {message: `Deleted expense with ID ${expenseId}`})
         getExpensesForUser();
@@ -49,7 +51,7 @@ function deleteExpense(expenseId) {
 }
 
 function addExpense() {
-    axios.post("/expense", expenseToAdd.value)
+    ExpenseService.addExpense(expenseToAdd.value.accountId, expenseToAdd.value.value, expenseToAdd.value.description)
     .then(response => {
         store.commit('addNotification', {message: `Added expense: ${response.data.expense_id}`})
         getExpensesForUser();
@@ -70,7 +72,7 @@ function addExpensePopup(visible) {
 
 function getAccountsForUser() {
     loading.value = true;
-    axios.get(`/accounts/${store.state.userData.nick}`)
+    AccountService.getAccountsForUser(store.state.userData.nick)
     .then(response => {
         accountsForUser.value = response.data.map(account => account.account_id);
         loading.value = false;

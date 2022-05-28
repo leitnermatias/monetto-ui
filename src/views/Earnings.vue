@@ -1,5 +1,4 @@
 <script setup>
-import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import LoadingSymbol from '@/components/LoadingSymbol.vue';
@@ -7,6 +6,8 @@ import DataTableVue from '@/components/DataTable.vue';
 import DeleteButton from '@/components/buttons/DeleteButton.vue';
 import StickyAddButton from '@/components/buttons/StickyAddButton.vue';
 import Popup from "@/components/Popup.vue"
+import * as EarningService from "@/service/earning";
+import * as AccountService from "@/service/account";
 
 
 const store = useStore()
@@ -29,7 +30,7 @@ onMounted(() => {
 
 function getEarningsForUser() {
     loading.value = true;
-    axios.get(`/earnings/user/${store.state.userData.nick}`)
+    EarningService.getEarningsForUser(store.state.userData.nick)
     .then(response => {
         earningsForUser.value = response.data;
         earningsForUser.value.forEach(earning => {
@@ -41,7 +42,7 @@ function getEarningsForUser() {
 }
 
 function deleteEarning(earningId) {
-    axios.delete(`/earning/${earningId}`)
+    EarningService.deleteEarning(earningId)
     .then(response => {
         store.commit('addNotification', {message: `Deleted earning with ID ${earningId}`})
         getEarningsForUser();
@@ -49,7 +50,7 @@ function deleteEarning(earningId) {
 }
 
 function addEarning() {
-    axios.post("/earning", earningToAdd.value)
+    EarningService.addEarning(earningToAdd.value.accountId, earningToAdd.value.value, earningToAdd.value.description)
     .then(response => {
         store.commit('addNotification', {message: `Added earning: ${response.data.earning_id}`})
         getEarningsForUser();
@@ -70,7 +71,7 @@ function addEarningPopup(visible) {
 
 function getAccountsForUser() {
     loading.value = true;
-    axios.get(`/accounts/${store.state.userData.nick}`)
+    AccountService.getAccountsForUser(store.state.userData.nick)
     .then(response => {
         accountsForUser.value = response.data.map(account => account.account_id);
         loading.value = false;

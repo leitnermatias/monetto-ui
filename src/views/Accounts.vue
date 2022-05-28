@@ -10,7 +10,9 @@ import DataTable from '@/components/DataTable.vue';
 import DeleteButton from '@/components/buttons/DeleteButton.vue';
 import ActionButton from "@/components/buttons/ActionButton.vue";
 import Popup from "@/components/Popup.vue";
-import {getAccountsForUser, deleteAccount, addAccount} from "@/service/account";
+import * as AccountService from "@/service/account";
+import * as EarningService from "@/service/earning";
+import * as ExpenseService from "@/service/expense";
 
 
 const store = useStore();
@@ -21,6 +23,10 @@ const valueToAdd = ref({
     value: "",
     description: "",
 })
+const accountToAdd = ref({
+    name: "",
+    description: ""
+})
 
 const activePopup = ref("");
 
@@ -30,13 +36,15 @@ onMounted(() => {
 
 function getAccounts() {
     loading.value = true;
-    getAccountsForUser(store.state.userData.nick)
+    AccountService.getAccountsForUser(store.state.userData.nick)
     .then(response => {
         accounts.value = response.data.map(account => {
             return {
                 accountId: account.account_id,
                 earnings: sum(account.earnings),
-                expenses: sum(account.expenses)
+                expenses: sum(account.expenses),
+                name: account.name,
+                description: account.description
             }
         })
 
@@ -56,41 +64,34 @@ function sum(earnings) {
 }
 
 function deleteAcc(accountId) {
-    deleteAccount(accountId)
+    AccountService.deleteAccount(accountId)
     .then(() => {
         store.commit('addNotification', {message: `Deleted account with ID ${accountId}`})
         getAccounts();
     })
 }
 
-function addAcc() {
-    addAccount(store.state.userData.nick)
+function addAccount() {
+    AccountService.addAccount(store.state.userData.nick, accountToAdd.value.name, accountToAdd.value.description)
     .then(response => {
         store.commit('addNotification', {message: `Added an account for user ${store.state.userData.nick}`})
         getAccounts()
+        popup('closePopup');
     })
 }
 
 function popup(type, accountId) {
-    activeAccount.value = accountId;
-    valueToAdd.value
-    switch (type) {
-        case "addEarning":
-            activePopup.value = "addEarning";
-            break;
-        case "addExpense":
-            activePopup.value = "addExpense";
-            break;
-        case 'closePopup':
-            activePopup.value = "";
-            break;
-        default:
-            break;
+    if (type === 'closePopup') {
+        activePopup.value = '';
+        activeAccount.value = null;
+    } else {
+        activeAccount.value = accountId;
+        activePopup.value = type;
     }
 }
 
 function addEarningForAccount() {
-    axios.post("/earning", Object.assign(valueToAdd.value, {accountId: activeAccount.value}))
+    EarningService.addEarning(activeAccount.value, valueToAdd.value.value, valueToAdd.value.description)
     .then(response => {
         store.commit('addNotification', {message: `Added earning: ${response.data.earning_id}`})
         getAccounts();
@@ -99,7 +100,7 @@ function addEarningForAccount() {
 }
 
 function addExpenseForAccount() {
-    axios.post("/expense", Object.assign(valueToAdd.value, {accountId: activeAccount.value}))
+    ExpenseService.addExpense(activeAccount.value, valueToAdd.value.value, valueToAdd.value.description)
     .then(response => {
         store.commit('addNotification', {message: `Added expense: ${response.data.earning_id}`})
         getAccounts();
@@ -112,7 +113,7 @@ function addExpenseForAccount() {
 <template>
     <div class="flex flex-col justify-center items-center">
         <h1 class="flex items-center justify-center gap-2 text-center text-2xl text-slate-900 border-b-4 rounded border-slate-300 p-2 w-full"><CashIcon class="w-6 h-6 text-slate-700"/>Accounts</h1>
-        <Popup v-if="activePopup === 'addEarning'" @cancel="activePopup = ''" @accept="addEarningForAccount">
+        <Popup v-if="activePopup === 'addEarning'" @cancel="popup('closePopup')" @accept="addEarningForAccount">
             <template #title>
                 <div class="flex justify-center items-center mt-1 text-2xl border-b-2 pt-2 border-blue-300 text-slate-900 font-semibold">
                     <h1>Add earning</h1>
@@ -132,7 +133,7 @@ function addExpenseForAccount() {
                 </div>
             </template>
         </Popup>
-        <Popup v-if="activePopup === 'addExpense'" @cancel="activePopup = ''" @accept="addExpenseForAccount">
+        <Popup v-if="activePopup === 'addExpense'" @cancel="popup('closePopup')" @accept="addExpenseForAccount">
             <template #title>
                 <div class="flex justify-center items-center mt-1 text-2xl border-b-2 pt-2 border-blue-300 text-slate-900 font-semibold">
                     <h1>Add earning</h1>
@@ -152,14 +153,34 @@ function addExpenseForAccount() {
                 </div>
             </template>
         </Popup>
+        <Popup v-if="activePopup === 'addAccount'" @cancel="popup('closePopup')" @accept="addAccount">
+            <template #title>
+                <div class="flex justify-center items-center mt-1 text-2xl border-b-2 pt-2 border-blue-300 text-slate-900 font-semibold">
+                    <h1>Add account</h1>
+                </div>
+            </template>
+
+            <template #body>
+                <div class="flex flex-col gap-2 justify-center items-center pt-2 mt-4">
+                    <div class="flex flex-col w-full items-center">
+                        <label class="self-center font-semibold text-slate-900">Name</label>
+                        <input v-model="accountToAdd.name" maxlength="100" type="text" class="form-input rounded border-slate-400 focus:ring-0 focus:border-orange-300 focus:border-2 w-1/2">
+                    </div>
+                    <div class="flex flex-col w-full items-center">
+                        <label class="self-center font-semibold text-slate-900">Description</label>
+                        <textarea v-model="accountToAdd.description" maxlength="100" class="form-textarea rounded w-1/2 resize-none border-slate-400 focus:border-orange-300 focus:ring-0 focus:border-2"></textarea>
+                    </div>
+                </div>
+            </template>
+        </Popup>
         
         
-        <AddAccountButton @click="addAcc" v-if="!loading" />
+        <AddAccountButton @click="popup('addAccount', null)" v-if="!loading" />
         <LoadingSymbol v-if="loading" class="w-10 h-10 mt-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"/>
         
         <DataTable 
         v-else
-        :headersKeys="{'Account ID':'accountId', 'Total Earnings':'earnings', 'Total Expenses':'expenses'}" 
+        :headersKeys="{'Account ID':'accountId', 'Name':'name', 'Description':'description', 'Total Earnings':'earnings', 'Total Expenses':'expenses'}" 
         :data="accounts" 
         hasActions
         >
