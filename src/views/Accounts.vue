@@ -34,6 +34,29 @@ onMounted(() => {
     getAccounts()
 })
 
+function sum(earnings) {
+    let totalEarnings = 0;
+
+    earnings.forEach(earning => {
+        totalEarnings += parseFloat(earning.value)
+    })
+
+    return totalEarnings.toFixed(2);
+
+}
+
+function popup(type, accountId) {
+    if (type === 'closePopup') {
+        activePopup.value = '';
+        activeAccount.value = null;
+        valueToAdd.value.description = "";
+        valueToAdd.value.value = "";
+    } else {
+        activeAccount.value = accountId;
+        activePopup.value = type;
+    }
+}
+
 function getAccounts() {
     loading.value = true;
     AccountService.getAccountsForUser(store.state.userData.nick)
@@ -52,17 +75,6 @@ function getAccounts() {
     })
 }
 
-function sum(earnings) {
-    let totalEarnings = 0;
-
-    earnings.forEach(earning => {
-        totalEarnings += parseFloat(earning.value)
-    })
-
-    return totalEarnings.toFixed(2);
-
-}
-
 function deleteAcc(accountId) {
     AccountService.deleteAccount(accountId)
     .then(() => {
@@ -78,16 +90,6 @@ function addAccount() {
         getAccounts()
         popup('closePopup');
     })
-}
-
-function popup(type, accountId) {
-    if (type === 'closePopup') {
-        activePopup.value = '';
-        activeAccount.value = null;
-    } else {
-        activeAccount.value = accountId;
-        activePopup.value = type;
-    }
 }
 
 function addEarningForAccount() {
